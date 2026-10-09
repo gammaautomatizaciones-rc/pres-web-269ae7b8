@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Propuesta de servicios — GAMMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a; --card:#1a1a1a; --line:#2a2a2a;
+    --yellow:#FFEB3B; --gold2:#FFC107;
+    --white:#fff; --grey:#a0a0a0; --grey2:#6b6b6b;
+    --maxw:860px; --navh:78px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Montserrat',-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--white); line-height:1.55;
+    -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  body::before{content:""; position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(900px 500px at 85% -5%, rgba(255,235,59,.10), transparent 60%),
+      radial-gradient(700px 500px at 0% 100%, rgba(255,214,0,.06), transparent 55%), var(--bg);}
+  body::after{content:""; position:fixed; inset:0; z-index:0; opacity:.035; pointer-events:none;
+    background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+    background-size:54px 54px;}
+
+  /* ====== PROGRESO ====== */
+  .progress{position:fixed; top:0; left:0; right:0; height:3px; background:#1a1a1a; z-index:30}
+  .progress .bar{height:100%; width:0; background:linear-gradient(90deg,var(--yellow),var(--gold2)); transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+  /* ====== DECK / SLIDES ====== */
+  .deck{position:relative; height:100%; z-index:1}
+  .slide{
+    position:absolute; inset:0; padding:calc(env(safe-area-inset-top) + 40px) clamp(20px,6vw,56px) calc(var(--navh) + 20px);
+    display:flex; flex-direction:column; justify-content:center; overflow-y:auto;
+    opacity:0; visibility:hidden; transform:translateY(16px);
+    transition:opacity .45s ease, transform .45s ease, visibility 0s linear .45s;
+  }
+  .slide.active{opacity:1; visibility:visible; transform:none; transition:opacity .5s ease, transform .5s ease}
+  .inner{max-width:var(--maxw); margin:0 auto; width:100%}
+
+  .kicker{font-size:12px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--yellow); margin-bottom:16px; display:flex; align-items:center; gap:12px}
+  .kicker .n{font-size:11px; color:var(--grey2); letter-spacing:.14em}
+  h2{font-weight:900; font-size:clamp(23px,5.6vw,38px); line-height:1.12; letter-spacing:-.02em; margin-bottom:10px}
+  h2 .hl{color:var(--yellow)}
+  .sub{color:var(--grey); font-size:clamp(14px,3.4vw,16.5px); font-weight:500; max-width:56ch; margin-bottom:clamp(20px,4vw,28px)}
+  .sub b{color:#fff; font-weight:700}
+
+  /* ---- Portada ---- */
+  .cover{text-align:left}
+  .brandrow{display:flex; align-items:center; gap:12px; margin-bottom:clamp(28px,7vw,52px)}
+  .brandrow img{width:38px;height:38px}
+  .brandname{font-weight:900; letter-spacing:.14em; font-size:20px}
+  .brandname b{color:var(--yellow)}
+  .tag-top{font-size:12px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--yellow); margin-bottom:16px}
+  h1{font-weight:900; font-size:clamp(30px,8vw,62px); line-height:1.04; letter-spacing:-.02em; margin-bottom:16px}
+  h1 .hl{color:var(--yellow)}
+  .lede{color:var(--grey); font-size:clamp(15px,3.8vw,19px); font-weight:500; max-width:40ch; margin-bottom:24px}
+  .chips{display:flex; flex-wrap:wrap; gap:9px}
+  .chip{background:#000; border:1px solid var(--line); border-radius:999px; padding:9px 14px; font-size:12.5px; font-weight:700; color:#e8e8e8}
+  .chip b{color:var(--yellow); font-weight:800}
+
+  /* ---- listas de puntos ---- */
+  .pts{display:grid; gap:11px}
+  @media(min-width:680px){ .pts.two{grid-template-columns:1fr 1fr} }
+  .pt{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px 17px}
+  .pt .t{font-weight:800; font-size:clamp(14.5px,3.6vw,16px); margin-bottom:5px; display:flex; gap:9px; align-items:flex-start}
+  .pt .t .dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-top:7px;flex:none;box-shadow:0 0 9px rgba(255,235,59,.6)}
+  .pt .x{color:var(--grey); font-size:clamp(13px,3.3vw,14.5px); font-weight:500; padding-left:17px; line-height:1.5}
+  .pt .x b{color:#fff; font-weight:700}
+
+  /* ---- banda 24/7 ---- */
+  .band{background:linear-gradient(135deg,#1c1c15,#121212); border:1px solid rgba(255,235,59,.30); border-radius:20px; padding:clamp(24px,5.5vw,38px); position:relative; overflow:hidden}
+  .band::before{content:""; position:absolute; top:-50%; left:-10%; width:420px; height:420px; background:radial-gradient(circle,rgba(255,235,59,.13),transparent 65%)}
+  .band .big247{font-weight:900; font-size:clamp(40px,13vw,90px); line-height:1; letter-spacing:-.03em; color:var(--yellow); position:relative; margin-bottom:8px}
+  .band p{color:var(--grey); font-size:clamp(14px,3.5vw,16.5px); font-weight:500; max-width:54ch; position:relative}
+  .band p b{color:#fff; font-weight:700}
+
+  /* ---- métricas ---- */
+  .metrics{display:grid; grid-template-columns:1fr 1fr; gap:11px}
+  .metric{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:clamp(16px,4vw,24px)}
+  .metric.hot{border-color:rgba(255,235,59,.5); background:linear-gradient(165deg,#1c1c15,#141414)}
+  .metric .big{font-weight:900; font-size:clamp(26px,8vw,44px); color:var(--yellow); line-height:1; letter-spacing:-.02em}
+  .metric .lbl{color:var(--grey); font-size:clamp(11px,2.8vw,12.5px); font-weight:600; margin-top:8px; line-height:1.4}
+  .foot{margin-top:16px; font-size:12.5px; color:var(--grey2); font-style:italic; font-weight:500}
+
+  /* ---- referencias ---- */
+  .refs{display:grid; gap:12px}
+  @media(min-width:680px){ .refs{grid-template-columns:repeat(3,1fr)} }
+  .ref{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:clamp(16px,4vw,22px); display:flex; flex-direction:column; gap:8px}
+  .ref .logo{height:58px; width:58px; flex:none; border-radius:14px; background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:5px}
+  .ref .logo img{max-height:100%; max-width:100%; object-fit:contain}
+  .ref .nm{font-weight:800; font-size:clamp(14.5px,3.6vw,16px)}
+  .ref .ru{color:var(--yellow); font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase}
+  .ref .dd{color:var(--grey); font-size:12.5px; font-weight:500; line-height:1.5}
+  .ref .dd b{color:#fff; font-weight:700}
+
+  /* ---- planes ---- */
+  .plans{display:grid; gap:12px}
+  @media(min-width:760px){ .plans{grid-template-columns:repeat(3,1fr); align-items:start} }
+  .plan{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:clamp(16px,3.8vw,22px); position:relative; display:flex; flex-direction:column}
+  .plan.featured{border-color:var(--yellow); background:linear-gradient(170deg,#1c1c15,#141414); box-shadow:0 0 0 1px rgba(255,235,59,.2)}
+  .plan-badge{position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--yellow); color:#000; font-size:10.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:4px 12px; border-radius:999px; white-space:nowrap}
+  .plan-name{font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); margin-bottom:8px}
+  .plan.featured .plan-name{color:var(--yellow)}
+  .plan-price{font-weight:900; font-size:clamp(25px,6.5vw,33px); line-height:1; letter-spacing:-.02em; white-space:nowrap}
+  .plan-price span{display:block; margin-top:4px; font-size:12px; font-weight:600; color:var(--grey2)}
+  .ad-pill{display:inline-block; align-self:flex-start; background:#000; border:1px solid rgba(255,235,59,.4); color:var(--yellow); font-size:11px; font-weight:800; padding:5px 11px; border-radius:999px; margin:12px 0 12px}
+  .feat{list-style:none; display:grid; gap:7px; margin-top:auto}
+  .feat li{display:flex; gap:8px; align-items:flex-start; font-size:12.5px; font-weight:500; color:#e4e4e4}
+  .feat li::before{content:"✓"; color:var(--yellow); font-weight:900; flex:none; font-size:12px; line-height:1.4}
+  .feat li b{color:#fff; font-weight:700}
+  .note{margin-top:16px; font-size:12px; color:var(--grey2); font-weight:500; text-align:center}
+
+  /* ---- contacto final ---- */
+  .final{text-align:center}
+  .final h2{font-size:clamp(26px,7vw,46px)}
+  .contact{display:inline-flex; flex-wrap:wrap; justify-content:center; gap:10px 22px; align-items:center; border-top:1px solid var(--line); padding-top:24px; margin-top:28px; font-size:13.5px; color:var(--grey); font-weight:600}
+  .contact b{color:var(--yellow); font-weight:800; letter-spacing:.08em}
+  .contact a{color:var(--grey); text-decoration:none}
+
+  /* ====== NAV ====== */
+  .nav{position:fixed; left:0; right:0; bottom:0; height:var(--navh); z-index:30;
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:0 clamp(16px,5vw,40px) env(safe-area-inset-bottom);
+    background:linear-gradient(0deg,rgba(10,10,10,.96),rgba(10,10,10,.75) 70%,transparent); backdrop-filter:blur(6px)}
+  .nav button{font-family:inherit; cursor:pointer; border:none; border-radius:999px; font-weight:800; transition:transform .15s, opacity .2s, background .2s}
+  .nav button:active{transform:scale(.96)}
+  .btn-prev{background:transparent; color:var(--grey); border:1px solid var(--line) !important; padding:12px 20px; font-size:13.5px}
+  .btn-prev:hover{color:#fff; border-color:var(--grey2) !important}
+  .btn-next{background:var(--yellow); color:#000; padding:14px 26px; font-size:14.5px; box-shadow:0 10px 30px -10px rgba(255,235,59,.5)}
+  .btn-next:hover{background:#fff}
+  .counter{display:flex; align-items:center; gap:7px}
+  .counter .dot{width:7px; height:7px; border-radius:50%; background:#333; transition:background .3s, transform .3s}
+  .counter .dot.on{background:var(--yellow); transform:scale(1.35)}
+  [hidden]{display:none !important}
+
+  /* ====== PRINT (PDF: cada paso = una página) ====== */
+  @media print{
+    @page{ size:A4; margin:14mm }
+    html,body{height:auto; overflow:visible; background:#0a0a0a; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+    body::after{display:none}
+    .progress,.nav{display:none !important}
+    .deck{height:auto}
+    .slide{position:static; inset:auto; opacity:1 !important; visibility:visible !important; transform:none !important;
+      min-height:auto; height:auto; padding:0 0 10mm; page-break-after:always; break-after:page; display:block}
+    .slide:last-child{page-break-after:auto}
+    .pt,.metric,.ref,.plan,.band{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="bar" id="bar"></div></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 PORTADA -->
+  <section class="slide cover active">
+    <div class="inner">
+      <div class="brandrow"><img src="logo.png" alt="GAMMA"><div class="brandname">GAM<b>MA</b></div></div>
+      <div class="tag-top">Gestión de redes + publicidad · orientada a resultados</div>
+      <h1>Más <span class="hl">clientes</span> para Transporte GAF,<br>no solo más posteos.</h1>
+      <p class="lede">Manejamos tus redes y tus campañas con una sola obsesión: que te escriba más gente que está por mudarse. Medimos cada peso.</p>
+      <div class="chips">
+        <div class="chip"><b>Resultados</b> medidos</div>
+        <div class="chip">Equipo <b>24/7</b></div>
+        <div class="chip">Pauta <b>incluida</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 DIAGNÓSTICO -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Lo que vemos en tu negocio <span class="n">· paso 2</span></div>
+      <h2>Miramos tus redes antes de escribirte.</h2>
+      <p class="sub">Esto es lo que encontramos:</p>
+      <div class="pts two">
+        <div class="pt"><div class="t"><span class="dot"></span>Instagram activo, pero chico</div><div class="x"><b>@transporte_gaf</b> tiene buen material, pero con <b>~1.700 seguidores</b> hay mucha gente de AMBA que te necesita y no te ve.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>La web quedó en el tiempo</div><div class="x">Las últimas fotos son de <b>agosto 2025</b>: la marca se ve despareja según por dónde te encuentren.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Todo orgánico, techo bajo</div><div class="x">Tus promos le llegan casi solo a quien <b>ya te sigue</b>, no a quien está por mudarse.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Un diferencial sin explotar</div><div class="x">Transporte para <b>bandas y producciones</b>: trabajos de mayor valor que hoy pasan desapercibidos.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 QUÉ HACEMOS -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Qué hacemos por vos <span class="n">· paso 3</span></div>
+      <h2>Cada cosa ataca uno de esos puntos —y se mide.</h2>
+      <div class="pts two">
+        <div class="pt"><div class="t"><span class="dot"></span>Reordenamos y optimizamos las redes</div><div class="x">Línea gráfica, calendario y una sola cara de marca en Instagram y Facebook.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Lanzamos campañas de pauta</div><div class="x"><b>La inversión en Meta ya va incluida.</b> Le llegás a gente de tu zona que hoy no te ve.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Contenido constante</div><div class="x">Posteos, stories diarias y reels todos los meses → el Instagram crece.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Interactuamos y contestamos</div><div class="x">Respondemos DMs y comentarios, mantenemos vivo el ciclo → el cliente no se enfría.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Capitalizamos tu diferencial</div><div class="x">Contenido de bandas, producciones y viajes al interior → trabajos de mayor valor.</div></div>
+        <div class="pt"><div class="t"><span class="dot"></span>Reporte y portfolio del trending</div><div class="x">Ves en números qué contenido y qué campaña te trae clientes. Nada a ojo.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 24/7 -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Atención 24/7 <span class="n">· paso 4</span></div>
+      <div class="band">
+        <div class="big247">24/7</div>
+        <h2 style="margin-bottom:14px">Un <span class="hl">equipo detrás</span>, todos los días, a toda hora.</h2>
+        <p>No es una sola persona que contesta cuando puede. Detrás de tus redes hay un <b>equipo que responde consultas las 24 horas, los 7 días</b> —incluso fines de semana y feriados, que es justo cuando se organiza una mudanza—. El que escribe un domingo a la noche <b>no se te enfría ni se te va con otro</b>: lo atendemos en el momento.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 RESULTADOS -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Lo que nos importa: resultados <span class="n">· paso 5</span></div>
+      <h2>No vendemos posteos. Vendemos <span class="hl">resultados</span>.</h2>
+      <p class="sub">Esto es lo que ya logramos gestionando pauta. <b>Medido, no estimado:</b></p>
+      <div class="metrics">
+        <div class="metric hot"><div class="big">$173,82</div><div class="lbl">costo por conversación nueva (lead) vía pauta</div></div>
+        <div class="metric"><div class="big">61</div><div class="lbl">conversaciones nuevas con solo $10.603 de pauta</div></div>
+        <div class="metric"><div class="big">12.633</div><div class="lbl">mensajes atendidos a 923 personas</div></div>
+        <div class="metric"><div class="big">2 meses</div><div class="lbl">de campaña continua, sin cortes</div></div>
+      </div>
+      <p class="foot">Cada peso de pauta trabajando para traerte conversaciones, no likes sueltos.</p>
+    </div>
+  </section>
+
+  <!-- 6 REFERENCIAS -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">Quiénes confían en nosotros <span class="n">· paso 6</span></div>
+      <h2>No arrancamos de cero.</h2>
+      <p class="sub">Ya gestionamos la presencia y la atención de clientes que dependen de nosotros todos los días:</p>
+      <div class="refs">
+        <div class="ref">
+          <div class="logo"><img src="logo-lacem.jpeg" alt="Clínica LACEM"></div>
+          <div class="nm">Clínica LACEM</div>
+          <div class="ru">Laboratorio de análisis clínicos</div>
+          <div class="dd">Casi <b>13.000 mensajes</b> atendidos. Atención y envío de resultados por WhatsApp, todos los días.</div>
+        </div>
+        <div class="ref">
+          <div class="logo"><img src="logo-brizuela.png" alt="Brizuela Automotores"></div>
+          <div class="nm">Brizuela Automotores</div>
+          <div class="ru">Concesionaria</div>
+          <div class="dd">Atención y presencia digital para un rubro de venta de <b>alto valor</b>.</div>
+        </div>
+        <div class="ref">
+          <div class="logo"><img src="logo-podologia.png" alt="Romina Oviedo Podología"></div>
+          <div class="nm">Romina Oviedo</div>
+          <div class="ru">Podología integral</div>
+          <div class="dd">Pacientes, turnos y consultas resueltas <b>sin que se pierda ninguna</b>.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 INVERSIÓN -->
+  <section class="slide">
+    <div class="inner">
+      <div class="kicker">La inversión <span class="n">· paso 7</span></div>
+      <h2>Tres formas de arrancar. Las tres con <span class="hl">pauta incluida</span>.</h2>
+      <div class="plans">
+        <div class="plan">
+          <div class="plan-name">Esencial</div>
+          <div class="plan-price">$800.000 <span>/ mes</span></div>
+          <div class="ad-pill">$200.000 de pauta incluidos</div>
+          <ul class="feat">
+            <li>Instagram + Facebook</li>
+            <li><b>2 posteos</b>/sem + stories</li>
+            <li><b>2 reels</b> por mes</li>
+            <li>Interacción y respuesta</li>
+            <li><b>Campaña con $200.000</b> de pauta</li>
+            <li>Reporte mensual</li>
+          </ul>
+        </div>
+        <div class="plan featured">
+          <div class="plan-badge">Recomendado</div>
+          <div class="plan-name">Gestión</div>
+          <div class="plan-price">$1.200.000 <span>/ mes</span></div>
+          <div class="ad-pill">$400.000 de pauta incluidos</div>
+          <ul class="feat">
+            <li><b>Todo lo de Esencial</b>, y además:</li>
+            <li><b>3 posteos</b>/sem + stories diarias</li>
+            <li><b>4 reels</b> por mes</li>
+            <li>Línea gráfica + calendario</li>
+            <li><b>Campaña con $400.000</b> de pauta</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <div class="plan-name">Full</div>
+          <div class="plan-price">$2.000.000 <span>/ mes</span></div>
+          <div class="ad-pill">$800.000 de pauta incluidos</div>
+          <ul class="feat">
+            <li><b>Todo lo de Gestión</b>, y además:</li>
+            <li><b>Campaña con $800.000</b> de pauta</li>
+            <li>Optimización agresiva + segmentación fina</li>
+            <li>Mucha más gente nueva de tu zona</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Mensual, sin permanencia y con la pauta ya incluida. Subís o bajás de plan cuando quieras.</p>
+    </div>
+  </section>
+
+  <!-- 8 CONTACTO -->
+  <section class="slide final">
+    <div class="inner">
+      <h2>Listos para poner a <span class="hl">GAF</span> adelante.</h2>
+      <p class="sub" style="margin:0 auto 6px">Arrancamos cuando quieras: en el primer mes ya ves contenido saliendo, la primera campaña midiendo y el equipo atendiendo.</p>
+      <div class="contact">
+        <b>GAMMA</b>
+        <a href="mailto:info@gammaautomatizaciones.com">info@gammaautomatizaciones.com</a>
+        <a href="https://gammaautomatizaciones.com">gammaautomatizaciones.com</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button class="btn-prev" id="prev">← Anterior</button>
+  <div class="counter" id="dots"></div>
+  <button class="btn-next" id="next">Siguiente →</button>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  let i=0;
+  const bar=document.getElementById('bar');
+  const prev=document.getElementById('prev');
+  const next=document.getElementById('next');
+  const dots=document.getElementById('dots');
+  slides.forEach((_,k)=>{const d=document.createElement('span');d.className='dot'+(k===0?' on':'');dots.appendChild(d);});
+  const dotEls=[...dots.children];
+  function render(){
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    dotEls.forEach((d,k)=>d.classList.toggle('on',k===i));
+    bar.style.width=((i+1)/total*100)+'%';
+    prev.hidden=(i===0);
+    next.textContent=(i===total-1)?'Contacto ✓':'Siguiente →';
+    const active=slides[i]; if(active) active.scrollTop=0;
+  }
+  function go(n){ i=Math.max(0,Math.min(total-1,n)); render(); }
+  next.addEventListener('click',()=>{ if(i<total-1) go(i+1); });
+  prev.addEventListener('click',()=>go(i-1));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(i+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(i-1);}
+  });
+  let sx=null;
+  document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(sx===null)return; const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>60){ dx<0?go(i+1):go(i-1); } sx=null;
+  },{passive:true});
+  render();
+</script>
+</body>
+</html>
